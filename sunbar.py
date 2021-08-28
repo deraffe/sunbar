@@ -51,8 +51,8 @@ def get_bar(
     point_char = (point_percent * length) // 1
     bar = '█' * int(bar_end_chars)
     bar += bar_end_fractional_char
-    bar += '\n'
-    bar += ' ' * int(point_char - 1)
+    bar += f'\n{begin.day:02}'
+    bar += ' ' * int(point_char - (1 + 2))
     bar += '^'
     return bar
 
