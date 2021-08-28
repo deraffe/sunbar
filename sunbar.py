@@ -62,7 +62,7 @@ def get_bar(
 
 
 def fractional_char(fraction: float) -> str:
-    chars = '▁▂▃▄▅▆▇█'
+    chars = ' ▁▂▃▄▅▆▇█'
     increment = 1 / len(chars)
     for i, c in enumerate(chars):
         value = i * increment
