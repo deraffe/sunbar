@@ -65,6 +65,7 @@ def fractional_char(fraction: float) -> str:
         next_value = (i + 1) * increment
         if value < fraction < next_value:
             return c
+    raise RuntimeError("Couldn't find fractional character")
 
 
 def main():
