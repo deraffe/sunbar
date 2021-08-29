@@ -34,17 +34,23 @@ def get_sun(
 
 def get_bar(
     sunrise: datetime.datetime, now: datetime.datetime,
-    sunset: datetime.datetime, length: int
+    sunset: datetime.datetime, sunrise_tomorrow: datetime.datetime, length: int
 ) -> str:
     begin = sunrise
     bar_end = now
     point = sunset
-    log.debug(f'{begin=} {bar_end=} {point=} {length=}')
+    bar_limit = sunrise_tomorrow
+    log.debug(f'{begin=}')
+    log.debug(f'{bar_end=}')
+    log.debug(f'{point=}')
+    log.debug(f'{bar_limit=}')
+    log.debug(f'{length=}')
+    bar_time = bar_limit - begin
+    log.debug(f'{bar_time=}')
     assert begin < bar_end
     assert begin < point
-    day = datetime.timedelta(days=1)
-    bar_end_percent = (bar_end - begin) / day
-    point_percent = (point - begin) / day
+    bar_end_percent = (bar_end - begin) / bar_time
+    point_percent = (point - begin) / bar_time
     bar_end_chars = bar_end_percent * length
     bar_end_fractional_chars = bar_end_chars % 1
     bar_end_fractional_char = fractional_char(bar_end_fractional_chars)
@@ -88,16 +94,18 @@ def main():
         raise ValueError('Invalid log level: {}'.format(args.loglevel))
     logging.basicConfig(level=loglevel)
     sun = get_sun(args.latitude, args.longitude, args.elevation, day_offset=0)
-    sun_yesterday = get_sun(
-        args.latitude, args.longitude, args.elevation, day_offset=-1
+    sun_tomorrow = get_sun(
+        args.latitude, args.longitude, args.elevation, day_offset=1
     )
-    local_dt = datetime.datetime.now(datetime.timezone.utc).astimezone()
-    if sun.sunrise < local_dt:
-        print(get_bar(sun.sunrise, local_dt, sun.sunset, 20))
-    else:
-        print(
-            get_bar(sun_yesterday.sunrise, local_dt, sun_yesterday.sunset, 20)
+    local_now = datetime.datetime.now(datetime.timezone.utc).astimezone()
+    if sun.sunrise > local_now:
+        sun_tomorrow = sun
+        sun = get_sun(
+            args.latitude, args.longitude, args.elevation, day_offset=-1
         )
+    print(
+        get_bar(sun.sunrise, local_now, sun.sunset, sun_tomorrow.sunrise, 20)
+    )
 
 
 if __name__ == '__main__':
