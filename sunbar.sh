@@ -25,5 +25,6 @@ get_script_dir() {
 
 (
   cd "$(get_script_dir)"
+  export PIPENV_QUIET=1
   exec pipenv run "$(get_script_dir)/sunbar.py" "$@"
 )
